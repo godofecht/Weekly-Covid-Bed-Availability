@@ -1,6 +1,6 @@
 from pandas import read_csv, to_datetime
 from matplotlib.pyplot import subplots, close
-from imageio import get_writer, imread
+from imageio.v2 import get_writer, imread
 from io import BytesIO
 # CDC removed covid19-NatEst.csv from www.cdc.gov/nhsn. This is the Internet Archive's
 # copy of the final version (data from 01APR2020 to 07JUL2020).
