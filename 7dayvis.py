@@ -2,7 +2,9 @@ from pandas import read_csv, to_datetime
 from matplotlib.pyplot import subplots, close
 from imageio import get_writer, imread
 from io import BytesIO
-natest = read_csv('https://www.cdc.gov/nhsn/pdfs/covid19/covid19-NatEst.csv')
+# CDC removed covid19-NatEst.csv from www.cdc.gov/nhsn. This is the Internet Archive's
+# copy of the final version (data from 01APR2020 to 07JUL2020).
+natest = read_csv('https://web.archive.org/web/20220604130041id_/https://www.cdc.gov/nhsn/pdfs/covid19/covid19-NatEst.csv')
 natest = natest.drop([0]) # remove column description text
 statemap = dict(zip(natest.statename, natest.state)) # store state abbreviations
 natest['date'] = to_datetime(natest['collectionDate'], format='%d%b%Y') # code dates
