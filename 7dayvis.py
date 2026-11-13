@@ -14,10 +14,9 @@ natest = natest.unstack().astype(float).dropna() # convert states to columns
 icus = natest['ICUBedsOccAnyPat__N_ICUBeds_Est'].rolling(window=7).mean().dropna() # weekly moving average
 
 deaths = read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv')
-sf = deaths.groupby('Province_State').sum().T # group by state, sum, transpose
-sf = sf.drop(sf.index[range(5)]) # remove everything but Population
-pops = sf.iloc[[0]].T.astype(int) # Population sum
-sf = sf.iloc[1:].astype(int) # remove Population from cumulative deaths
+sf = deaths.groupby('Province_State').sum(numeric_only=True) # group by state and sum
+pops = sf[['Population']].astype(int) # Population sum
+sf = sf.filter(regex=r'^\d+/\d+/\d+$').T.astype(int) # cumulative deaths, one row per date
 sf['date'] = to_datetime(sf.index, format='%m/%d/%y')
 sf = sf.set_index('date')
 
