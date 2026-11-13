@@ -6,7 +6,7 @@ Weekly US hospital bed availability, pulled from the CDC NHSN patient impact rep
 
 A short Python script that makes a video from two public COVID-19 datasets from 2020. Each frame is one day. Each US state is a circle: across, its COVID-19 deaths per 100,000 people so far; up, the share of its hospital intensive care unit (ICU) beds in use, averaged over 7 days. Bigger circles are states with more people. Played in order, the frames show states moving as the first wave of the pandemic spread.
 
-The original CDC data link no longer works. "Run it" below shows how to point the script at an archived copy, which was tested and works.
+CDC no longer publishes the hospital data file, so the script reads an archived copy of it from the Internet Archive.
 
 ## What you can learn from it
 
@@ -22,10 +22,11 @@ The original CDC data link no longer works. "Run it" below shows how to point th
 
 **You will need:**
 
-- [Python](https://www.python.org/downloads/) 3.11. Newer versions of Python cannot install the older pandas the script needs.
+- [Python](https://www.python.org/downloads/) 3.
+- [Git](https://git-scm.com/downloads), to download the code.
 - An internet connection. The script downloads about 12 MB of data.
 
-Tested on macOS with Python 3.11 and pandas 1.5.3.
+Tested on macOS with Python 3.12, pandas 3.1.1, Matplotlib 3.11 and imageio 2.38.
 
 1. Download the code:
 
@@ -34,25 +35,23 @@ Tested on macOS with Python 3.11 and pandas 1.5.3.
    cd Weekly-Covid-Bed-Availability
    ```
 
-2. Install the libraries. pandas must be older than version 2, because the script relies on how pandas 1 added up tables that contain text.
+2. Make a virtual environment (a private folder of Python packages for this project), turn it on and install the libraries:
 
    ```sh
-   python3.11 -m pip install "pandas<2" "numpy<2" matplotlib imageio imageio-ffmpeg
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install pandas matplotlib imageio imageio-ffmpeg
    ```
 
-3. Open **7dayvis.py** and replace the web address on line 5 with an archived copy of the CDC file. Line 5 should read:
+   On Windows, run `.venv\Scripts\activate` instead of the `source` line.
 
-   ```python
-   natest = read_csv('https://web.archive.org/web/20220604130041id_/https://www.cdc.gov/nhsn/pdfs/covid19/covid19-NatEst.csv')
-   ```
-
-4. Run it:
+3. Run it:
 
    ```sh
-   python3.11 7dayvis.py
+   python 7dayvis.py
    ```
 
-It prints one dot per frame, about 70 in all. When it finishes there is a file called `deaths-vs-beds.mp4` in the folder. It is a 640 by 480 video, about 7 seconds long at 10 frames per second. You may also see warnings about `imread`; they do not stop the script.
+It prints one dot per frame, 70 in all. When it finishes there is a file called `deaths-vs-beds.mp4` in the folder. It is a 640 by 480 video, 7 seconds long at 10 frames per second.
 
 ## How it works
 
@@ -88,14 +87,11 @@ ICU occupancy is smoothed with a 7 day rolling mean before plotting, because the
 
 Each date becomes a scatter frame, and the frames are written straight to `deaths-vs-beds.mp4` at 10 fps through `imageio`. Circle size is population divided by 20,000. The axes are fixed at 0 to 180 deaths per 100,000 and 20 to 90 percent ICU use.
 
-The archived CDC file (snapshot of 4 June 2022) covers 1 April 2020 to 7 July 2020, for 50 states, Washington DC, Puerto Rico and the US total. The first row under the header describes each column, which is why the script drops row 0.
+CDC has removed `covid19-NatEst.csv` from its website and the old address returns "Page Not Found". No official copy is published anywhere else. Its successor, the HHS hospital capacity time series, is a different dataset with different columns. So line 7 of the script reads the Internet Archive's snapshot of 4 June 2022, which is the same file as CDC's final version from July 2020. It covers 1 April 2020 to 7 July 2020, for 50 states, Washington DC, Puerto Rico and the US total. The first row under the header describes each column, which is why the script drops row 0.
 
 ## Project status
 
-The script does not run as committed, for two reasons:
-
-- The CDC address on line 5 returns "Page Not Found". Use the archived copy shown in "Run it".
-- With pandas 2 or newer, the line that reads population fails with `ValueError: invalid literal for int()`, because pandas 2 joins text columns when it adds up a table. Use `pandas<2`.
+The script runs from a fresh clone with current pandas. It reads the CDC file from the Internet Archive, because CDC no longer hosts it. If the Internet Archive is slow or down, the script cannot start.
 
 The JHU repository it reads from was archived in 2023 and no longer updates. Its address still works.
 
